@@ -1,7 +1,7 @@
 # Primify
 _Embed any image into a prime number._
 
-![result](https://imgur.com/UoMYkVS)
+![result](https://i.imgur.com/UoMYkVS.png)
 ____
 [![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
 
