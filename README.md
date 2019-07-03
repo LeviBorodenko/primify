@@ -16,7 +16,7 @@ We proceed in 5 steps:
 	
 _Note: There are multiple different methods for quantising the color levels and some methods will produces better results for some images. Make sure to play around with the `--method` parameter to get the best result._
 
-4. Now we map each greyness level to a digit, et viola, we have embedded the picture into a number.
+4. Now we map each greyness level to a digit, et voila, we have embedded the picture into a number.
 
 5. It now remains to tweak some of the digits until we find a prime number that still looks like the image.
 

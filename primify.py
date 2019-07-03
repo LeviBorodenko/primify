@@ -124,7 +124,7 @@ class PrimeImage(object):
 
         self.im = self.im.filter(ImageFilter.SMOOTH_MORE)
 
-        # quantize image into 10 levels
+        # quantize image into 5 levels
         self.im = self.im.quantize(colors=5, method=self.CONVERSION_METHOD)
 
     def numberise(self):
