@@ -1,5 +1,5 @@
 # Primify
-_Transform any image into a prime number that looks like the image if glaced upon from far away._
+_Transform any image into a prime number that looks like the image if glanced upon from far away._
 
 ![result](https://i.imgur.com/UoMYkVS.png)
 [![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
