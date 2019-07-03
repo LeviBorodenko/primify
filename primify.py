@@ -6,7 +6,7 @@ import argparse
 
 class PrimeImage(object):
     """[summary]
-    This class provides methods to convert any image to a prime number.
+    This class provides methods to convert any image into a prime number.
 
     We use the python package Pillow to do all the image processing
     and sympy to check for primality.
@@ -24,13 +24,12 @@ class PrimeImage(object):
 
     """
 
-    def __init__(self, image_path: "Path to Image" = "./prime.png",
+    def __init__(self, image_path: str = "./prime.png",
                  max_digits: int = 5000, conversion_method: int = 1,
                  output_file: str ="./prime.txt", verbose: bool = False):
         super(PrimeImage, self).__init__()
-        self.IMAGE_PATH = image_path
 
-        # Calculating the maximal dimensions of the image (in pixels)
+        self.IMAGE_PATH = image_path
         self.MAX_DIGITS = max_digits
 
         # saving conversion method.
@@ -39,7 +38,7 @@ class PrimeImage(object):
         # saving verbosity status
         self.VERBOSE = verbose
 
-        # check if verbose is a bool
+        # check if verbose is boolean
         if not isinstance(verbose, bool):
             raise ValueError("Verbosity must be True or False")
 
@@ -47,11 +46,12 @@ class PrimeImage(object):
         if not (isinstance(self.MAX_DIGITS, int) or (self.MAX_DIGITS < 10)):
             raise ValueError("max_digits should be an integer and > 10")
 
-        # Both height and with must be less than or equal to insure that
-        # the total number of pixels does not exceed max_digits
+        # Both height and width must be less than or equal to the root
+        # of max_digits to insure that the total number of pixels does
+        # not exceed max_digits.
         self.MAX_LENGTH = math.floor(self.MAX_DIGITS**0.5)
 
-        # ordered list of digits from least bright to brightest
+        # ordered list of digits from bright to dark
         self.ORDERED_DIGITS = [1, 7, 3, 9, 8]
 
         # loading the Pillow image object
@@ -132,7 +132,7 @@ class PrimeImage(object):
         Turn the image into a number that looks like the image
         [description]
         We convert the picture into a grey scale image with 5 levels
-        of greyness and then map each level to a digit and return that array
+        of greyness and then map each level to a digit and return that array.
         """
         # Do nothing if we already numberised
         if self.flag_numberised:
@@ -170,7 +170,7 @@ class PrimeImage(object):
         result = ""
         for index, digit in enumerate(self.CONVERTED_IMAGE_DATA):
 
-            # take a line break after we reach the  width of the image
+            # take a line break after we reach the width of the image
             if index % self.width == 0 and index > 0:
                 result += "\n"
 
@@ -180,7 +180,8 @@ class PrimeImage(object):
 
     def find_next_prime(self):
         """[summary]
-        We use sympy's isprime to find the next biggest prime
+        We use sympy's nextprime() to find the next biggest prime
+
         [description]
         Note that by the prime number theorem for a number of order e^n
         we expect every log(n) number following our number to be prime.
