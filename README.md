@@ -9,28 +9,28 @@ ____
 
 We proceed in 5 steps:
 
-	1. We resize the image to contain at most a `--max_digits` amount of pixels.
+1. We resize the image to contain at most a `--max_digits` amount of pixels.
 	
-	2. Run various image processing steps like edge enhancement and smoothing before converting the image into grey-scale.
+2. Run various image processing steps like edge enhancement and smoothing before converting the image into grey-scale.
+
+3. We then quantise the image into just having 5 to 10 greyness levels.
 	
-	3. We then quantise the image into just having 5 to 10 greyness levels.
-	
-	Note: There are multiple different methods for quantising the color levels and some methods will produces better results for some images. Make sure to play around with the `--method` parameter to get the best result. 
+_Note: There are multiple different methods for quantising the color levels and some methods will produces better results for some images. Make sure to play around with the `--method` parameter to get the best result._
 
-	4. Now we map each greyness level to a digit, et viola, we have embedded the picture into a number.
+4. Now we map each greyness level to a digit, et viola, we have embedded the picture into a number.
 
-	5. It now remains to tweak some of the digits until we find a prime number that still looks like the image.
+5. It now remains to tweak some of the digits until we find a prime number that still looks like the image.
 
-	Note: According to the prime number theorem, the density of prime numbers is  asymptotically of order log(n). Hence, if we have a number with m digits, the number of primality tests that we expect to do until we hit a prime number is roughly proportional to m. Since we use the Baillie–PSW primality test, the overall expected computational complexity of our prime searching procedure is O(n*log(n)³).
+_Note: According to the prime number theorem, the density of prime numbers is  asymptotically of order log(n). Hence, if we have a number with m digits, the number of primality tests that we expect to do until we hit a prime number is roughly proportional to m. Since we use the Baillie–PSW primality test, the overall expected computational complexity of our prime searching procedure is O(n*log(n)³)._
 
 ## How to use
 
 You can either import the `PrimeImage` class from `primify.py` or use `primify.py` as a command-line tool.
 
-# Requirements
+### Requirements
 Make sure met all the dependencies inside the `requirements.txt`. I would recommend to use pypy, as it seems to decrease compiling time by about 20%.
 
-# Command-line tool
+### Command-line tool
 ```
 usage: primify.py [-h] [--image IMAGE_PATH] [--max_digits MAX_DIGITS]
                   [--method {0,1,2}] [--output_dir OUTPUT_DIR]
@@ -54,7 +54,7 @@ Thus, if you have the source image at `./source.png` and you want to convert it 
 
 `python primify.py -v --image ./source.png --max_digits 5000 --method 0 --output_dir ./prime/ --output_file prime.txt`
 
-# Importing the PrimeImage class
+### Importing the PrimeImage class
 
 you can also simply import the `PrimeImage` class from `primify.py` and use that class in your own code. Take a look at the source code to see what methods and attributes there are.
 
