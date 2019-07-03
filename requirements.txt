@@ -1,0 +1,5 @@
+certifi==2019.3.9
+mpmath==1.1.0
+olefile==0.46
+Pillow==6.0.0
+sympy==1.4
