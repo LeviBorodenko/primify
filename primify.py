@@ -2,6 +2,7 @@ from PIL import Image, ImageFilter
 import math
 from sympy import nextprime
 import argparse
+from pathlib import Path
 
 
 class PrimeImage(object):
@@ -12,21 +13,22 @@ class PrimeImage(object):
     and sympy to check for primality.
 
     [description]
-    Initialte with:
-    image_path (str): Relative path to image.
+    Initiate with:
+    image_path (Path): Relative path to image.
     max_digits (int): Maximal number of digits in the resulting prime.
     converion_method (int): number between 0 and 2. Play around to see which
     one produces the clearest image.
     verbose {bool} -- Verbose status reporting in terminal if True
-    output_file {str} -- Output file (default: "./prime.txt")
+    output_file {Path} -- Output file (default: "./prime.txt")
 
     Note: The computational complexity is O(d*log(d)^3) in the number of digits
 
     """
 
-    def __init__(self, image_path: str = "./prime.png",
+    def __init__(self, image_path: Path = Path("./prime.png"),
                  max_digits: int = 5000, conversion_method: int = 1,
-                 output_file: str ="./prime.txt", verbose: bool = False):
+                 output_file_path: Path = Path("./prime.txt"),
+                 verbose: bool = False):
         super(PrimeImage, self).__init__()
 
         self.IMAGE_PATH = image_path
@@ -58,7 +60,7 @@ class PrimeImage(object):
         self.im = Image.open(self.IMAGE_PATH)
 
         # saving output file path
-        self.output_file = output_file
+        self.output_file_path = output_file_path
 
         # Flags to tell functions if certain heavy operations have
         # already been performed
@@ -108,7 +110,7 @@ class PrimeImage(object):
         [description]
         Step 1: Apply an edge enhancement algorithm
 
-        Step 2: Convert to grey scale
+        Step 2: Convert to gray scale
 
         Step 3: Quantize to 5 color levels
         """
@@ -119,7 +121,7 @@ class PrimeImage(object):
         # Enhance edges using Pillow ImageFilter module
         self.im = self.im.filter(ImageFilter.EDGE_ENHANCE)
 
-        # convert to grey scale
+        # convert to gray scale
         self.im = self.im.convert(mode="L")
 
         self.im = self.im.filter(ImageFilter.SMOOTH_MORE)
@@ -131,7 +133,7 @@ class PrimeImage(object):
         """[summary]
         Turn the image into a number that looks like the image
         [description]
-        We convert the picture into a grey scale image with 5 levels
+        We convert the picture into a gray scale image with 5 levels
         of greyness and then map each level to a digit and return that array.
         """
         # Do nothing if we already numberised
@@ -247,7 +249,7 @@ about {int(self.MAX_DIGITS * 2.3)} primality tests.""")
         self.get_prime()
 
         # print it to the output file
-        with open(self.output_file, "w") as f:
+        with open(self.output_file_path, "w") as f:
             print(self.prime_string, file=f)
 
             if self.VERBOSE:
@@ -263,7 +265,7 @@ if __name__ == "__main__":
         epilog="Made by Levi B.")
 
     parser.add_argument("--image", action="store",
-                        type=str, default="./prime.png",
+                        type=Path, default="./prime.png",
                         help="Source image to be converted", dest="image_path")
 
     parser.add_argument("--max_digits", action="store",
@@ -276,12 +278,12 @@ if __name__ == "__main__":
                         help="Method for converting image. Tweak 'till happy")
 
     parser.add_argument("--output_dir", action="store",
-                        type=str, default="./",
+                        type=Path, default="./",
                         help="Directory of the output text file",
                         dest="output_dir")
 
     parser.add_argument("--output_file", action="store",
-                        type=str, default="prime.txt",
+                        type=Path, default="prime.txt",
                         help="File name of the file containing the prime.",
                         dest="output_file")
 
@@ -294,6 +296,6 @@ if __name__ == "__main__":
                    max_digits=args.max_digits,
                    conversion_method=args.method,
                    verbose=args.verbose,
-                   output_file=args.output_dir + args.output_file)
+                   output_file_path=args.output_dir / args.output_file)
 
     a.create_prime()
