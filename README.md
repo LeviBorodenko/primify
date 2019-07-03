@@ -20,7 +20,7 @@ _Note: There are multiple different methods for quantising the color levels and 
 
 5. It now remains to tweak some of the digits until we find a prime number that still looks like the image.
 
-_Note: According to the prime number theorem, the density of prime numbers is  asymptotically of order log(n). Hence, if we have a number with m digits, the number of primality tests that we expect to do until we hit a prime number is roughly proportional to m. Since we use the Baillie–PSW primality test, the overall expected computational complexity of our prime searching procedure is O(n*log(n)³)._
+_Note: According to the prime number theorem, the density of prime numbers is  asymptotically of order 1/log(n). Hence, if we have a number with m digits, the number of primality tests that we expect to do until we hit a prime number is roughly proportional to m. Since we use the Baillie–PSW primality test, the overall expected computational complexity of our prime searching procedure is O(n*log(n)³)._
 
 ## How to use
 
