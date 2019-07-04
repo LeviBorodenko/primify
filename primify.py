@@ -124,8 +124,6 @@ class PrimeImage(object):
         # convert to gray scale
         self.im = self.im.convert(mode="L")
 
-        self.im = self.im.filter(ImageFilter.SMOOTH_MORE)
-
         # quantize image into 5 levels
         self.im = self.im.quantize(colors=5, method=self.CONVERSION_METHOD)
 
@@ -158,6 +156,7 @@ class PrimeImage(object):
         self.flag_numberised = True
 
         if self.VERBOSE:
+            self.show()
             print(self.show_number())
 
     def show_number(self):
