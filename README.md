@@ -27,7 +27,7 @@ _Note: According to the prime number theorem, the density of prime numbers is  a
 You can either import the `PrimeImage` class from `primify.py` or use `primify.py` as a command-line tool.
 
 ### Requirements
-Make sure met all the dependencies inside the `requirements.txt`. I would recommend to use pypy, as it seems to decrease compiling time by about 20%.
+Make sure you meet all the dependencies inside the `requirements.txt`. I would recommend to use pypy, as it seems to decrease compiling time by about 20%.
 
 ### Command-line tool
 ```
