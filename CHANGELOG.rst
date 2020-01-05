@@ -2,9 +2,15 @@
 Changelog
 =========
 
-Version 0.1
+Version 1.0.0
 ===========
 
-- Feature A added
-- FIX: nasty bug #1729 fixed
-- add your changes here!
+- State of the art before refactor
+
+Version 1.0.1
+===========
+
+- introducing a test framework
+- proper dependency and installation management
+- upleaded to pip
+- proper CLI

@@ -24,14 +24,15 @@ _Note: According to the prime number theorem, the density of prime numbers is  a
 
 ## How to use
 
-You can either import the `PrimeImage` class from `primify.py` or use `primify.py` as a command-line tool.
+Simply get the `primify` command line tool via `pip install primify`.
+You can also import the `PrimeImage` class from `primify.primify_base` or use `cli.py` as a command-line script.
 
 ### Requirements
 Make sure you meet all the dependencies inside the `requirements.txt`. I would recommend to use pypy, as it seems to decrease compiling time by about 20%.
 
 ### Command-line tool
 ```
-usage: primify.py [-h] [--image IMAGE_PATH] [--max_digits MAX_DIGITS]
+usage: primify [-h] [--image IMAGE_PATH] [--max_digits MAX_DIGITS]
                   [--method {0,1,2}] [--output_dir OUTPUT_DIR]
                   [--output_file OUTPUT_FILE] [-v]
 
@@ -55,4 +56,4 @@ Thus, if you have the source image at `./source.png` and you want to convert it 
 
 ### Importing the PrimeImage class
 
-you can also simply import the `PrimeImage` class from `primify.py` and use that class in your own code. Take a look at the source code to see what methods and attributes there are.
+you can also simply import the `PrimeImage` class from `primify.primify_base` and use that class in your own code. Take a look at the source code to see what methods and attributes there are.
