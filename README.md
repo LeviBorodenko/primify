@@ -52,7 +52,7 @@ optional arguments:
 ```
 Thus, if you have the source image at `./source.png` and you want to convert it into a prime contained in `./prime/prime.txt` which has at most 5000 digits and using conversion method 0 (other options are 1 or 2). Then you should run:
 
-`python primify.py -v --image ./source.png --max_digits 5000 --method 0 --output_dir ./prime/ --output_file prime.txt`
+`primify -v --image ./source.png --max_digits 5000 --method 0 --output_dir ./prime/ --output_file prime.txt`
 
 ### Importing the PrimeImage class
 
