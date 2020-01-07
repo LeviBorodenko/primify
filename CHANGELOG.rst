@@ -14,3 +14,8 @@ Version 1.0.1
 - proper dependency and installation management
 - upleaded to pip
 - proper CLI
+
+Version 1.0.2
+===========
+
+- Shrink the image vertically to account for the font glyphs not being square.

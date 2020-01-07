@@ -88,7 +88,14 @@ class PrimeImage(object):
         if self.VERBOSE:
             print("Resizing image...")
 
-        # resizing
+        # squash the height of the image to 60% to account for
+        # the shape of the glyphs
+        x, y = self.im.size
+        y_new = int(y * 0.45)
+
+        self.im = self.im.resize((x, y_new), 1)
+
+        # resizing to only have MAX_DIGITS many digits
         self.im.thumbnail([self.MAX_LENGTH, self.MAX_LENGTH])
 
         # getting width after resizing
@@ -260,74 +267,3 @@ about {int(self.MAX_DIGITS * 2.3)} primality tests."""
 
             if self.VERBOSE:
                 print(self.prime_string)
-
-
-if __name__ == "__main__":
-
-    # we will use argparse to handle command-line functionality
-
-    parser = argparse.ArgumentParser(
-        description="Command-line tool for converting images to primes",
-        epilog="Made by Levi B.",
-    )
-
-    parser.add_argument(
-        "--image",
-        action="store",
-        type=Path,
-        default="./prime.png",
-        help="Source image to be converted",
-        dest="image_path",
-    )
-
-    parser.add_argument(
-        "--max_digits",
-        action="store",
-        type=int,
-        default=1500,
-        help="Maximal number of digits the prime can have",
-        dest="max_digits",
-    )
-
-    parser.add_argument(
-        "--method",
-        action="store",
-        type=int,
-        choices=[0, 1, 2],
-        dest="method",
-        help="Method for converting image. Tweak 'till happy",
-    )
-
-    parser.add_argument(
-        "--output_dir",
-        action="store",
-        type=Path,
-        default="./",
-        help="Directory of the output text file",
-        dest="output_dir",
-    )
-
-    parser.add_argument(
-        "--output_file",
-        action="store",
-        type=Path,
-        default="prime.txt",
-        help="File name of the file containing the prime.",
-        dest="output_file",
-    )
-
-    parser.add_argument(
-        "-v", action="store_true", dest="verbose", help="Verbose output"
-    )
-
-    args = parser.parse_args()
-
-    a = PrimeImage(
-        image_path=args.image_path,
-        max_digits=args.max_digits,
-        conversion_method=args.method,
-        verbose=args.verbose,
-        output_file_path=args.output_dir / args.output_file,
-    )
-
-    a.create_prime()
