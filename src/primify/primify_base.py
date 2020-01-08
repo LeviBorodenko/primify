@@ -88,8 +88,8 @@ class PrimeImage(object):
         if self.VERBOSE:
             print("Resizing image...")
 
-        # squash the height of the image to 60% to account for
-        # the shape of the glyphs
+        # squash the height of the image to 45% to account for
+        # the shape of the glyphs and the spacing between lines.
         x, y = self.im.size
         y_new = int(y * 0.45)
 
