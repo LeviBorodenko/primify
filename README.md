@@ -57,3 +57,7 @@ Thus, if you have the source image at `./source.png` and you want to convert it 
 ### Importing the PrimeImage class
 
 you can also simply import the `PrimeImage` class from `primify.primify_base` and use that class in your own code. Take a look at the source code to see what methods and attributes there are.
+
+### Additional Material
+
+[Daniel Temkin](http://danieltemkin.com/) wrote a lovely article on his blog [esoteric.codes](https://esoteric.codes) giving some interesting insight and background for this tool. You can read it [here](https://esoteric.codes/blog/primify).
