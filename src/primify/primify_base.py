@@ -7,22 +7,37 @@ from sympy import nextprime
 
 
 class PrimeImage(object):
-    """[summary]
+    """
     This class provides methods to convert any image into a prime number.
 
     We use the python package Pillow to do all the image processing
     and sympy to check for primality.
 
-    [description]
-    Initiate with:
-    image_path (Path): Relative path to image.
-    max_digits (int): Maximal number of digits in the resulting prime.
-    converion_method (int): number between 0 and 2. Play around to see which
-    one produces the clearest image.
-    verbose {bool} -- Verbose status reporting in terminal if True
-    output_file {Path} -- Output file (default: "./prime.txt")
 
-    Note: The computational complexity is O(d*log(d)^3) in the number of digits
+    Arguments:
+
+        image_path (Path): Path to image.
+
+        max_digits (int): Maximal number of digits in the resulting prime.
+
+        converion_method (int): number between 0 and 2. Play around to see
+            which one produces the clearest image.
+
+        verbose (bool): Verbose status reporting in terminal if True
+
+        output_file (Path): Output file (default: "./prime.txt")
+
+    Note:
+
+        The computational complexity is O(d*log(d)^3) in the number of digits
+
+    Example:
+
+        if you have the source image at `./source.png` and you want to convert it into a prime contained in `./prime/prime.txt` which has at most 5000 digits and using conversion method 0 (other options are 1 or 2). Then you should run:
+
+        `primify -v --image ./source.png --max_digits 5000 --method 0 --output_dir ./prime/ --output_file prime.txt`
+
+
 
     """
 
@@ -77,11 +92,11 @@ class PrimeImage(object):
         self.flag_primed = False
 
     def _resize(self):
-        """[summary]
+        """
         We resize the image to contain at most max_size pixels
 
-        [description]
-        The reason is that we don't want to find too large primes
+        description:
+            The reason is that we don't want to find too large primes
         """
 
         # if verbose
@@ -105,25 +120,26 @@ class PrimeImage(object):
             print(f"Resized image to be {self.width}x{self.im.size[1]} pixels.")
 
     def show(self):
-        """[summary]
-        Shows the Pillow image instance
-        [description]
-        Mainly for debugging
+        """Shows the Pillow image instance
+
+        description:
+            Mainly for debugging
         """
         self.im.show()
 
     def _enhance(self):
-        """[summary]
-        We apply various filters to the image to improve the conversion
+        """We apply various filters to the image to improve the conversion
         to ASCII.
 
-        SHOULD BE DONE AFTER RESIZING
-        [description]
-        Step 1: Apply an edge enhancement algorithm
+        Warning:
+            SHOULD BE DONE AFTER RESIZING
 
-        Step 2: Convert to gray scale
+        description:
+            Step 1: Apply an edge enhancement algorithm
 
-        Step 3: Quantize to 5 color levels
+            Step 2: Convert to gray scale
+
+            Step 3: Quantize to 5 color levels
         """
 
         if self.VERBOSE:
@@ -139,11 +155,11 @@ class PrimeImage(object):
         self.im = self.im.quantize(colors=5, method=self.CONVERSION_METHOD)
 
     def numberise(self):
-        """[summary]
-        Turn the image into a number that looks like the image
-        [description]
-        We convert the picture into a gray scale image with 5 levels
-        of greyness and then map each level to a digit and return that array.
+        """Turn the image into a number that looks like the image
+
+        description:
+            We convert the picture into a gray scale image with 5 levels
+            of greyness and then map each level to a digit and return that array.
         """
         # Do nothing if we already numberised
         if self.flag_numberised:
@@ -172,9 +188,7 @@ class PrimeImage(object):
             print(self.show_number())
 
     def show_number(self):
-        """[summary]
-        Numberise the image and print the resulting number accordingly
-        [description]
+        """Numberise the image and print the resulting number accordingly.
         """
         # numberise if haven't already
         if not self.flag_numberised:
@@ -192,14 +206,13 @@ class PrimeImage(object):
         return result
 
     def find_next_prime(self):
-        """[summary]
-        We use sympy's nextprime() to find the next biggest prime
+        """We use sympy's nextprime() to find the next biggest prime
 
-        [description]
-        Note that by the prime number theorem for a number of order e^n
-        we expect every log(n) number following our number to be prime.
-        So finding the prime should not be difficult, especially since
-        primality testing is quick.
+        description:
+            Note that by the prime number theorem for a number of order e^n
+            we expect every log(n) number following our number to be prime.
+            So finding the prime should not be difficult, especially since
+            primality testing is quick.
         """
         # numberise if haven't already
         self.numberise()
@@ -227,11 +240,11 @@ about {int(self.MAX_DIGITS * 2.3)} primality tests."""
         self.flag_primed = True
 
     def get_prime(self):
-        """[summary]
-        Converts the image into a prime number
-        [description]
-        The prime number is stored at self.prime
-        and the formated string at self.prime_string
+        """Converts the image into a prime number
+
+        description:
+            The prime number is stored at self.prime
+            and the formated string at self.prime_string.
         """
 
         # first we find the next prime
@@ -249,12 +262,11 @@ about {int(self.MAX_DIGITS * 2.3)} primality tests."""
             self.prime_string += str(digit)
 
     def create_prime(self):
-        """[summary]
-        Wraps all the methods to generate a file containing your primed picture
+        """Wraps all the methods to generate a file containing your primed picture
 
-        [description]
-        Turns the picture that the class has been initialized with into a prime
-        which it outputs into a text file.
+        description:
+            Turns the picture that the class has been initialized with
+            into a prime which it outputs into a text file.
 
         """
 
