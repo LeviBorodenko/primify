@@ -1,12 +1,15 @@
-import argparse
 import math
 from pathlib import Path
-
+from typing import Literal
+import logging
 from PIL import Image, ImageFilter
 from sympy import nextprime
 
+logging.basicConfig()
+logger = logging.getLogger(__file__)
 
-class PrimeImage(object):
+
+class PrimeImage:
     """
     This class provides methods to convert any image into a prime number.
 
@@ -45,39 +48,38 @@ class PrimeImage(object):
         self,
         image_path: Path = Path("./prime.png"),
         max_digits: int = 5000,
-        conversion_method: int = 1,
+        conversion_method: Literal[0, 1, 2, 3] = 1,
         output_file_path: Path = Path("./prime.txt"),
         verbose: bool = False,
     ):
-        super(PrimeImage, self).__init__()
 
-        self.IMAGE_PATH = image_path
-        self.MAX_DIGITS = max_digits
+        self.image_path = image_path
+        self.max_digits = max_digits
 
         # saving conversion method.
-        self.CONVERSION_METHOD = conversion_method
+        self.conversion_method = conversion_method
 
-        # saving verbosity status
-        self.VERBOSE = verbose
+        if verbose:
+            logger.setLevel(logging.DEBUG)
 
         # check if verbose is boolean
         if not isinstance(verbose, bool):
             raise ValueError("Verbosity must be True or False")
 
         # check if max_digits is and integer and greater than 10
-        if not (isinstance(self.MAX_DIGITS, int) or (self.MAX_DIGITS < 10)):
+        if not (isinstance(self.max_digits, int) or (self.max_digits < 10)):
             raise ValueError("max_digits should be an integer and > 10")
 
         # Both height and width must be less than or equal to the root
         # of max_digits to insure that the total number of pixels does
         # not exceed max_digits.
-        self.MAX_LENGTH = math.floor(self.MAX_DIGITS ** 0.5)
+        self.max_length = math.floor(self.max_digits ** 0.5)
 
         # ordered list of digits from bright to dark
-        self.ORDERED_DIGITS = [1, 7, 3, 9, 8]
+        self.ordered_digits = [1, 7, 3, 9, 8]
 
         # loading the Pillow image object
-        self.im = Image.open(self.IMAGE_PATH)
+        self.im = Image.open(self.image_path)
 
         # saving output file path
         self.output_file_path = output_file_path
@@ -100,8 +102,7 @@ class PrimeImage(object):
         """
 
         # if verbose
-        if self.VERBOSE:
-            print("Resizing image...")
+        logger.debug("Resizing image...")
 
         # squash the height of the image to 45% to account for
         # the shape of the glyphs and the spacing between lines.
@@ -111,13 +112,12 @@ class PrimeImage(object):
         self.im = self.im.resize((x, y_new), 1)
 
         # resizing to only have MAX_DIGITS many digits
-        self.im.thumbnail([self.MAX_LENGTH, self.MAX_LENGTH])
+        self.im.thumbnail((self.max_length, self.max_length))
 
         # getting width after resizing
         self.width = self.im.size[0]
 
-        if self.VERBOSE:
-            print(f"Resized image to be {self.width}x{self.im.size[1]} pixels.")
+        logger.debug(f"Resized image to be {self.width}x{self.im.size[1]} pixels.")
 
     def show(self):
         """Shows the Pillow image instance
@@ -142,8 +142,7 @@ class PrimeImage(object):
             Step 3: Quantize to 5 color levels
         """
 
-        if self.VERBOSE:
-            print("Preparing image for conversion into number.")
+        logger.debug("Preparing image for conversion into number.")
 
         # Enhance edges using Pillow ImageFilter module
         self.im = self.im.filter(ImageFilter.EDGE_ENHANCE)
@@ -152,7 +151,7 @@ class PrimeImage(object):
         self.im = self.im.convert(mode="L")
 
         # quantize image into 5 levels
-        self.im = self.im.quantize(colors=5, method=self.CONVERSION_METHOD)
+        self.im = self.im.quantize(colors=5, method=self.conversion_method)
 
     def numberise(self):
         """Turn the image into a number that looks like the image
@@ -169,8 +168,7 @@ class PrimeImage(object):
         self._resize()
         self._enhance()
 
-        if self.VERBOSE:
-            print("Converting image to a number...")
+        logger.debug("Converting image to a number...")
 
         # map each level or greyness to a number between 0 and 10
         self.CONVERTED_IMAGE_DATA = [
@@ -183,13 +181,12 @@ class PrimeImage(object):
         # set flag_numberised to true
         self.flag_numberised = True
 
-        if self.VERBOSE:
+        if logger.level is logging.DEBUG:
             self.show()
-            print(self.show_number())
+        logger.debug(self.show_number())
 
     def show_number(self):
-        """Numberise the image and print the resulting number accordingly.
-        """
+        """Numberise the image and print the resulting number accordingly."""
         # numberise if haven't already
         if not self.flag_numberised:
             self.numberise()
@@ -223,18 +220,18 @@ class PrimeImage(object):
 
         self.prime = 0 + self.NUMBER
 
-        if self.VERBOSE:
-            print(
-                f"""Starting search for prime.
+        logger.debug(
+            f"""Starting search for prime.
 Note that in this instance we would expect to run
-about {int(self.MAX_DIGITS * 2.3)} primality tests."""
-            )
+about {int(self.max_digits * 2.3)} primality tests."""
+        )
 
         self.prime = nextprime(self.prime)
+        assert isinstance(self.prime, int)
 
-        if self.VERBOSE:
-            print("Found!")
-            print(f"Did ~{int((self.prime-self.NUMBER)*2/6)} primality tests")
+        logger.debug(
+            f"Found! After ~{int((self.prime-self.NUMBER)*2/6)} primality tests"
+        )
 
         # set primed flag to true
         self.flag_primed = True
@@ -277,5 +274,4 @@ about {int(self.MAX_DIGITS * 2.3)} primality tests."""
         with open(self.output_file_path, "w") as f:
             print(self.prime_string, file=f)
 
-            if self.VERBOSE:
-                print(self.prime_string)
+            logger.debug(self.prime_string)
