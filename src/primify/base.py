@@ -103,12 +103,36 @@ class PrimeImage:
         logger.debug(f"Resized image to be {image.size[0]}x{image.size[1]} pixels.")
         return image
 
+    @staticmethod
+    def reshape_number(number: int, width: int) -> str:
+
+        result = ""
+        for index, digit in enumerate(str(number)):
+
+            # take a line break after we reach the width
+            if index % width == 0 and index > 0:
+                result += "\n"
+
+            result += digit
+
+        return result
+
+    @staticmethod
+    def image_to_number(image: Image.Image):
+        n_levels = len(BRIGHTNESS_ORDERED_DIGITS)
+
+        # smooth the image to have better regions of constancy after quanitsation
+        image = image.filter(ImageFilter.MinFilter)
+
+        # now convert to quantized greyscale
+        grey_scale_image = image.convert("L").quantize(n_levels)
+
+        grey_scale_image.show()
+
 
 if __name__ == "__main__":
 
     instance = PrimeImage(
-        image_path="examples/images/gauss.png", max_digits=10000, verbose=True
+        image_path="examples/images/tao.png", max_digits=10000, verbose=True
     )
-    instance.resize_for_pixel_limit(instance.im, instance.max_digits).convert(
-        "L"
-    ).quantize(10).show()
+    PrimeImage.image_to_number(instance.im)
