@@ -1,15 +1,36 @@
+from dataclasses import dataclass
+import multiprocessing as mp
 import math
 from pathlib import Path
-from typing import Literal, Union
+from typing import Iterator, List, Literal, Tuple, Union
 import logging
-from PIL import Image, ImageFilter
+from PIL import Image, ImageFilter, ImageEnhance, ImageOps
 from sympy import nextprime
 
 logging.basicConfig()
 logger = logging.getLogger(__file__)
 
 GLYPH_ASPECT_RATIO = 0.45
-BRIGHTNESS_ORDERED_DIGITS = [1, 7, 3, 9, 8]
+BRIGHTNESS_ORDERED_DIGITS: List[int] = [1, 7, 3, 9, 8]
+
+
+@dataclass
+class ImageNumber:
+    value: int
+    image_width: int
+
+    def __str__(self) -> str:
+
+        result = ""
+        for index, digit in enumerate(str(self.value)):
+
+            # take a line break after we reach the width
+            if index % self.image_width == 0 and index > 0:
+                result += "\n"
+
+            result += digit
+
+        return result
 
 
 class PrimeImage:
@@ -104,35 +125,97 @@ class PrimeImage:
         return image
 
     @staticmethod
-    def reshape_number(number: int, width: int) -> str:
+    def quantize_image(image: Image.Image) -> Image.Image:
 
-        result = ""
-        for index, digit in enumerate(str(number)):
-
-            # take a line break after we reach the width
-            if index % width == 0 and index > 0:
-                result += "\n"
-
-            result += digit
-
-        return result
-
-    @staticmethod
-    def image_to_number(image: Image.Image):
         n_levels = len(BRIGHTNESS_ORDERED_DIGITS)
+
+        # enhance it for better contrast
+        # enhancer = ImageEnhance.Contrast(image)
+        # image = enhancer.enhance(contrast)
 
         # smooth the image to have better regions of constancy after quanitsation
         image = image.filter(ImageFilter.MinFilter)
 
         # now convert to quantized greyscale
-        grey_scale_image = image.convert("L").quantize(n_levels)
+        grey_scale_image = image.convert("L")
 
-        grey_scale_image.show()
+        # make sure we use the entire digit pallet
+        grey_scale_image = ImageOps.autocontrast(grey_scale_image)
+
+        quantized_image = grey_scale_image.quantize(n_levels)
+        quantized_image.show()
+        return quantized_image
+
+    @staticmethod
+    def quantized_image_to_number(image: Image.Image) -> ImageNumber:
+        # use quantized levels as lookup indexes into BRIGHTNESS_ORDERED_DIGITS
+        digits = ""
+        for brightness_index in image.getdata():
+            digits += f"{BRIGHTNESS_ORDERED_DIGITS[brightness_index]}"
+
+        return ImageNumber(value=int(digits), image_width=image.width)
+
+    def _get_raw_number(self) -> ImageNumber:
+
+        quantized_image = PrimeImage.quantize_image(self.im)
+        # first we resize the image to only contain at most as many pixels as we want digits in the prime
+        resized_image = PrimeImage.resize_for_pixel_limit(
+            quantized_image, self.max_digits
+        )
+
+        # now we read the image as a number
+        image_number = PrimeImage.quantized_image_to_number(resized_image)
+
+        return image_number
+
+    def get_prime(self) -> ImageNumber:
+
+        raw_image_number = self._get_raw_number()
+        next_prime = nextprime(raw_image_number.value)
+        assert isinstance(next_prime, int)
+
+        return ImageNumber(next_prime, raw_image_number.image_width)
+
+    @staticmethod
+    def find_next_prime_sharded(
+        raw_image_number: ImageNumber, n_shard: int = 0
+    ) -> ImageNumber:
+
+        raw_number_shard = (
+            raw_image_number.value + math.log(raw_image_number.value) * n_shard
+        )
+        next_prime = nextprime(raw_number_shard)
+        assert isinstance(next_prime, int)
+
+        return ImageNumber(next_prime, raw_image_number.image_width)
+
+    @staticmethod
+    def find_next_prime_worker(
+        raw_image_number: ImageNumber, n_shard: int, found_prime: mp._EventType
+    ):
+        if not found_prime:
+            next_primePrimeImage.find_next_prime_sharded(raw_image_number, n_shard)
+
+
+class NextPrimeFinder:
+    def __init__(self, value: int, n_workers: int = 1):
+        self.value = int(value)
+        self.n_workers = n_workers
+
+    def prime_candidates(self) -> Iterator[int]:
+        candidate = self.value
+        while True:
+            if candidate % 6 in [1, 5]:
+                yield candidate
+            else:
+                candidate += 1
 
 
 if __name__ == "__main__":
 
     instance = PrimeImage(
-        image_path="examples/images/tao.png", max_digits=10000, verbose=True
+        image_path="examples/images/tao.png", max_digits=2500, verbose=True
     )
-    PrimeImage.image_to_number(instance.im)
+
+    prime, width = instance.get_prime()
+    print(PrimeImage.reshape_number(prime, width))
