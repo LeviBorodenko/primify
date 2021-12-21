@@ -25,7 +25,6 @@ class NextPrimeFinder:
 
     @staticmethod
     def is_prime_worker(candidate: int, found_prime) -> Optional[int]:
-        logger.debug(f"Checking if {candidate} is prime")
         if not found_prime.is_set():
             if isprime(candidate):
                 logger.info(f"{candidate} is prime!")
