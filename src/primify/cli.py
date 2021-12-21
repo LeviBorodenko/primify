@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 from primify import __version__
-from primify.primify_base import PrimeImage
+from primify.base import PrimeImage
 
 __author__ = "Levi Borodenko"
 __copyright__ = "Levi Borodenko"
@@ -39,27 +39,9 @@ def parse_args(args):
         "--max_digits",
         action="store",
         type=int,
-        default=1500,
+        default=5000,
         help="Maximal number of digits the prime can have",
         dest="max_digits",
-    )
-
-    parser.add_argument(
-        "--method",
-        action="store",
-        type=int,
-        choices=[0, 1, 2],
-        dest="method",
-        help="Method for converting image. Tweak 'till happy",
-    )
-
-    parser.add_argument(
-        "--output_dir",
-        action="store",
-        type=Path,
-        default="./",
-        help="Directory of the output text file",
-        dest="output_dir",
     )
 
     parser.add_argument(
@@ -91,15 +73,14 @@ def main(args):
         max_digits=args.max_digits,
         conversion_method=args.method,
         verbose=args.verbose,
-        output_file_path=args.output_dir / args.output_file,
+        output_file_path=args.output_file,
     )
 
-    a.create_prime()
+    a.get_prime()
 
 
 def run():
-    """Entry point for console_scripts
-    """
+    """Entry point for console_scripts"""
     main(sys.argv[1:])
 
 

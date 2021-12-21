@@ -1,14 +1,16 @@
 from dataclasses import dataclass
-import multiprocessing as mp
 import math
+import multiprocessing as mp
 from pathlib import Path
-from typing import Iterator, List, Literal, Tuple, Union
+from typing import List, Literal, Union
 import logging
-from PIL import Image, ImageFilter, ImageEnhance, ImageOps
-from sympy import nextprime
+from PIL import Image, ImageFilter, ImageOps
 
-logging.basicConfig()
+from primify.prime_finder import NextPrimeFinder
+from primify import console
+
 logger = logging.getLogger(__file__)
+logger.setLevel(logging.INFO)
 
 GLYPH_ASPECT_RATIO = 0.45
 BRIGHTNESS_ORDERED_DIGITS: List[int] = [1, 7, 3, 9, 8]
@@ -121,17 +123,13 @@ class PrimeImage:
 
         image = image.resize((x_scaled, y_scaled))
 
-        logger.debug(f"Resized image to be {image.size[0]}x{image.size[1]} pixels.")
+        console.log(f"Resized image to be {image.size[0]} x {image.size[1]} pixels.")
         return image
 
     @staticmethod
     def quantize_image(image: Image.Image) -> Image.Image:
 
         n_levels = len(BRIGHTNESS_ORDERED_DIGITS)
-
-        # enhance it for better contrast
-        # enhancer = ImageEnhance.Contrast(image)
-        # image = enhancer.enhance(contrast)
 
         # smooth the image to have better regions of constancy after quanitsation
         image = image.filter(ImageFilter.MinFilter)
@@ -143,7 +141,8 @@ class PrimeImage:
         grey_scale_image = ImageOps.autocontrast(grey_scale_image)
 
         quantized_image = grey_scale_image.quantize(n_levels)
-        quantized_image.show()
+        console.log("Preprocessed image for conversion into a number.")
+
         return quantized_image
 
     @staticmethod
@@ -155,67 +154,44 @@ class PrimeImage:
 
         return ImageNumber(value=int(digits), image_width=image.width)
 
-    def _get_raw_number(self) -> ImageNumber:
-
-        quantized_image = PrimeImage.quantize_image(self.im)
-        # first we resize the image to only contain at most as many pixels as we want digits in the prime
-        resized_image = PrimeImage.resize_for_pixel_limit(
-            quantized_image, self.max_digits
-        )
-
-        # now we read the image as a number
-        image_number = PrimeImage.quantized_image_to_number(resized_image)
-
-        return image_number
-
     def get_prime(self) -> ImageNumber:
 
-        raw_image_number = self._get_raw_number()
-        next_prime = nextprime(raw_image_number.value)
-        assert isinstance(next_prime, int)
+        with console.status(f"Converting {self.image_path} into number."):
+            quantized_image = PrimeImage.quantize_image(self.im)
 
-        return ImageNumber(next_prime, raw_image_number.image_width)
+            # first we resize the image to only contain at most as many pixels as we want digits in the prime
+            resized_image = PrimeImage.resize_for_pixel_limit(
+                quantized_image, self.max_digits
+            )
 
-    @staticmethod
-    def find_next_prime_sharded(
-        raw_image_number: ImageNumber, n_shard: int = 0
-    ) -> ImageNumber:
+            # now we read the image as a number
+            image_number = PrimeImage.quantized_image_to_number(resized_image)
 
-        raw_number_shard = (
-            raw_image_number.value + math.log(raw_image_number.value) * n_shard
-        )
-        next_prime = nextprime(raw_number_shard)
-        assert isinstance(next_prime, int)
+            console.log(
+                f"Converted image into a number with {int(math.log10(image_number.value))} digits."
+            )
 
-        return ImageNumber(next_prime, raw_image_number.image_width)
+        with console.status("Searching for a similar looking prime."):
 
-    @staticmethod
-    def find_next_prime_worker(
-        raw_image_number: ImageNumber, n_shard: int, found_prime: mp._EventType
-    ):
-        if not found_prime:
-            next_primePrimeImage.find_next_prime_sharded(raw_image_number, n_shard)
+            # initiate helping prime finder. Must faster than just using nextprime()
+            prime_finder = NextPrimeFinder(
+                value=image_number.value, n_workers=max(1, mp.cpu_count() - 1)
+            )
+            next_prime = prime_finder.find_next_prime()
 
+            # turn result back into an formated number
+            result = ImageNumber(next_prime, image_number.image_width)
 
-class NextPrimeFinder:
-    def __init__(self, value: int, n_workers: int = 1):
-        self.value = int(value)
-        self.n_workers = n_workers
-
-    def prime_candidates(self) -> Iterator[int]:
-        candidate = self.value
-        while True:
-            if candidate % 6 in [1, 5]:
-                yield candidate
-            else:
-                candidate += 1
+            console.print(str(result), style="black on white")
+            self.output_file_path.write_text(str(result))
+            console.log(f"Saved prime to {self.output_file_path}!")
+            return result
 
 
 if __name__ == "__main__":
 
     instance = PrimeImage(
-        image_path="examples/images/tao.png", max_digits=2500, verbose=True
+        image_path="examples/images/tao.png", max_digits=5000, verbose=True
     )
 
-    prime, width = instance.get_prime()
-    print(PrimeImage.reshape_number(prime, width))
+    instance.get_prime()
