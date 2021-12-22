@@ -49,11 +49,6 @@ class PrimeImage:
 
         max_digits (int): Maximal number of digits in the resulting prime.
 
-        converion_method (int): number between 0 and 2. Play around to see
-            which one produces the clearest image.
-
-        verbose (bool): Verbose status reporting in terminal if True
-
         output_file (Path): Output file (default: "./prime.txt")
 
     Note:
@@ -64,7 +59,7 @@ class PrimeImage:
 
         if you have the source image at `./source.png` and you want to convert it into a prime contained in `./prime/prime.txt` which has at most 5000 digits and using conversion method 0 (other options are 1 or 2). Then you should run:
 
-        `primify -v --image ./source.png --max_digits 5000 --method 0 --output_dir ./prime/ --output_file prime.txt`
+        `primify --image ./source.png --max_digits 5000 --output_file prime/prime.txt`
 
 
 
@@ -76,7 +71,6 @@ class PrimeImage:
         max_digits: int = 5000,
         conversion_method: Literal[0, 1, 2, 3] = 1,
         output_file_path: Union[Path, str] = Path("./prime.txt"),
-        verbose: bool = False,
     ):
 
         self.image_path = Path(image_path)
@@ -84,13 +78,6 @@ class PrimeImage:
 
         # saving conversion method.
         self.conversion_method = conversion_method
-
-        if verbose:
-            logger.setLevel(logging.DEBUG)
-
-        # check if verbose is boolean
-        if not isinstance(verbose, bool):
-            raise ValueError("Verbosity must be True or False")
 
         # check if max_digits is and integer and greater than 10
         if not (isinstance(self.max_digits, int) or (self.max_digits < 10)):
@@ -105,7 +92,7 @@ class PrimeImage:
     @staticmethod
     def resize_for_pixel_limit(image: Image.Image, max_pixels: int) -> Image.Image:
         """
-        We resize the image to contain at most max_size pixels
+        We resize the image to contain at most max_pixels pixels
 
         description:
             The reason is that we don't want to find too large primes
@@ -122,8 +109,8 @@ class PrimeImage:
         x_scaled, y_scaled = int(x / scale_factor), int(y / scale_factor)
 
         image = image.resize((x_scaled, y_scaled))
-
         console.log(f"Resized image to be {image.size[0]} x {image.size[1]} pixels.")
+
         return image
 
     @staticmethod
@@ -134,7 +121,7 @@ class PrimeImage:
         # smooth the image to have better regions of constancy after quanitsation
         image = image.filter(ImageFilter.MinFilter)
 
-        # now convert to quantized greyscale
+        # now convert to greyscale
         grey_scale_image = image.convert("L")
 
         # make sure we use the entire digit pallet
@@ -173,9 +160,16 @@ class PrimeImage:
 
         with console.status("Searching for a similar looking prime."):
 
-            # initiate helping prime finder. Must faster than just using nextprime()
+            # initiate helping prime finder. Much faster than just using nextprime()
+            n_processes = max(
+                1, mp.cpu_count() - 1
+            )  # at least one core should remain free
+
+            console.log(
+                f"Initializing multi-process prime finder with {n_processes} workers."
+            )
             prime_finder = NextPrimeFinder(
-                value=image_number.value, n_workers=max(1, mp.cpu_count() - 1)
+                value=image_number.value, n_workers=n_processes
             )
             next_prime = prime_finder.find_next_prime()
 
@@ -191,7 +185,8 @@ class PrimeImage:
 if __name__ == "__main__":
 
     instance = PrimeImage(
-        image_path="examples/images/tao.png", max_digits=5000, verbose=True
+        image_path="examples/images/tao.png",
+        max_digits=5000,
     )
 
     instance.get_prime()

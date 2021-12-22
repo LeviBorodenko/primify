@@ -9,7 +9,7 @@ _Transform any image into a prime number that looks like the image if glanced up
 
 We proceed in 5 steps:
 
-1. We resize the image to contain at most a `--max_digits` amount of pixels.
+1. We resize the image to contain at most a `--max-digits` amount of pixels.
 
 2. Run various image processing steps like edge enhancement and smoothing before converting the image into grey-scale.
 
@@ -29,25 +29,26 @@ You can also import the `PrimeImage` class from `primify.base` or use `cli.py` a
 ### Command-line tool
 
 ```
-usage: primify [-h] [--image IMAGE_PATH] [--max_digits MAX_DIGITS] [--output_file OUTPUT_FILE] [-v]
+usage: primify [-h] [--image IMAGE_PATH] [--max-digits MAX_DIGITS]
+               [--output-file OUTPUT_FILE]
 
 Command-line tool for converting images to primes
 
 optional arguments:
   -h, --help            show this help message and exit
-  --image IMAGE_PATH    Source image to be converted
-  --max_digits MAX_DIGITS
+  --image IMAGE_PATH, -i IMAGE_PATH
+                        Source image to be converted
+  --max-digits MAX_DIGITS, -d MAX_DIGITS
                         Maximal number of digits the prime can have
-  --output_file OUTPUT_FILE
+  --output-file OUTPUT_FILE, -o OUTPUT_FILE
                         File name of the file containing the prime.
-  -v                    Verbose output
 
 Made by Levi B.
 ```
 
-Thus, if you have the source image at `./source.png` and you want to convert it into a prime contained in `./prime/prime.txt` which has at most 5000 digits. Then you should run:
+Thus, if you have the source image at `./source.png` and you want to convert it into a prime contained in `./prime.txt` which has at most 5000 digits. Then you should run:
 
-`primify -v --image ./source.png --max_digits 5000 --output_file prime/prime.txt`
+`primify -v --image ./source.png --max-digits 5000 --output-file prime.txt`
 
 ### Importing the PrimeImage class
 

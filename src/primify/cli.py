@@ -28,6 +28,7 @@ def parse_args(args):
 
     parser.add_argument(
         "--image",
+        "-i",
         action="store",
         type=Path,
         default="./prime.png",
@@ -36,7 +37,8 @@ def parse_args(args):
     )
 
     parser.add_argument(
-        "--max_digits",
+        "--max-digits",
+        "-d",
         action="store",
         type=int,
         default=5000,
@@ -45,16 +47,13 @@ def parse_args(args):
     )
 
     parser.add_argument(
-        "--output_file",
+        "--output-file",
+        "-o",
         action="store",
         type=Path,
         default="prime.txt",
         help="File name of the file containing the prime.",
         dest="output_file",
-    )
-
-    parser.add_argument(
-        "-v", action="store_true", dest="verbose", help="Verbose output"
     )
 
     return parser.parse_args(args)
@@ -71,8 +70,6 @@ def main(args):
     a = PrimeImage(
         image_path=args.image_path,
         max_digits=args.max_digits,
-        conversion_method=args.method,
-        verbose=args.verbose,
         output_file_path=args.output_file,
     )
 

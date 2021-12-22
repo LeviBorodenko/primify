@@ -1,6 +1,14 @@
 from PIL import Image
+from sympy import isprime
 
 from primify.base import PrimeImage
+from primify.prime_finder import NextPrimeFinder
+
+
+def test_prime_finder():
+    almost_prime = 2 ** 67 - 2
+    instance = NextPrimeFinder(almost_prime, n_workers=1)
+    assert isprime(instance.find_next_prime())
 
 
 def test_resize_with_pixel_limit(test_image: Image.Image, test_max_digits: int):

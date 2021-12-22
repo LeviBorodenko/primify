@@ -1,7 +1,7 @@
 from itertools import islice
 import math
 import time
-from typing import Iterator, List, Optional
+from typing import Iterator, List, Optional, Set
 import multiprocessing as mp
 from sympy import isprime
 import logging
@@ -45,7 +45,7 @@ class NextPrimeFinder:
                 (candidate, found_prime) for candidate in self.prime_candidates()
             )
 
-            results: List[Optional[int]] = []
+            results: Set[Optional[int]] = set()
             search_start = time.time()
             while not found_prime.is_set():
                 console.log(
@@ -56,7 +56,7 @@ class NextPrimeFinder:
                     islice(candidate_iter, self.expected_n_primality_tests),
                 )
 
-                results.extend(result)
+                results |= set(result)
 
             console.log(
                 f"Got one! Next prime was found within {int(time.time()- search_start) + 1}s"
