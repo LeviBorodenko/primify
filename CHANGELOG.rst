@@ -19,3 +19,10 @@ Version 1.0.2
 ===========
 
 - Shrink the image vertically to account for the font glyphs not being square.
+
+Version 2.0.0
+===========
+
+- ~50x faster next prime number search
+- improved image processing
+- smarter image resizing
