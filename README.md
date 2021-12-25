@@ -43,12 +43,11 @@ optional arguments:
   --output-file OUTPUT_FILE, -o OUTPUT_FILE
                         File name of the file containing the prime.
 
-Made by Levi B.
 ```
 
 Thus, if you have the source image at `./source.png` and you want to convert it into a prime contained in `./prime.txt` which has at most 5000 digits. Then you should run:
 
-`primify -v --image ./source.png --max-digits 5000 --output-file prime.txt`
+`primify --image ./source.png --max-digits 5000 --output-file prime.txt`
 
 ### Importing the PrimeImage class
 
