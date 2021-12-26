@@ -18,11 +18,20 @@ BRIGHTNESS_ORDERED_DIGITS: List[int] = [1, 7, 3, 9, 8]
 
 @dataclass
 class ImageNumber:
+    """A number which encodes an image."""
+
     value: int
+    """The number itself"""
+
     image_width: int
+    """How many digits in an image row"""
 
     def __str__(self) -> str:
+        """prints the number as an image by taking a linebreak after image_width digits
 
+        Returns:
+            str: the formated number as a string (has linebreaks)
+        """
         result = ""
         for index, digit in enumerate(str(self.value)):
 
@@ -69,17 +78,13 @@ class PrimeImage:
         self,
         image_path: Union[Path, str] = Path("./prime.png"),
         max_digits: int = 5000,
-        conversion_method: Literal[0, 1, 2, 3] = 1,
         output_file_path: Union[Path, str] = Path("./prime.txt"),
     ):
 
         self.image_path = Path(image_path)
         self.max_digits = max_digits
 
-        # saving conversion method.
-        self.conversion_method = conversion_method
-
-        # check if max_digits is and integer and greater than 10
+        # check if max_digits is an integer and greater than 10
         if not (isinstance(self.max_digits, int) or (self.max_digits < 10)):
             raise ValueError("max_digits should be an integer and > 10")
 
@@ -173,20 +178,10 @@ class PrimeImage:
             )
             next_prime = prime_finder.find_next_prime()
 
-            # turn result back into an formated number
+            # turn result back into a formated number
             result = ImageNumber(next_prime, image_number.image_width)
 
             console.print(str(result), style="black on white")
             self.output_file_path.write_text(str(result))
             console.log(f"Saved prime to {self.output_file_path}!")
             return result
-
-
-if __name__ == "__main__":
-
-    instance = PrimeImage(
-        image_path="examples/images/tao.png",
-        max_digits=5000,
-    )
-
-    instance.get_prime()
