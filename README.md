@@ -2,9 +2,9 @@
 
 _Transform any image into a prime number that looks like the image if glanced upon from far away._
 
-![result](https://i.imgur.com/UoMYkVS.png)
-![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)
-![PyPI](https://badge.fury.io/py/primify.svg)
+[![result](https://i.imgur.com/UoMYkVS.png)](https://i.imgur.com/UoMYkVS.png)
+[![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
+[![PyPI](https://badge.fury.io/py/primify.svg)](https://badge.fury.io/py/primify.svg)
 
 ## How does it work
 
