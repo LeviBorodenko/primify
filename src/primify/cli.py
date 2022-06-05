@@ -56,6 +56,13 @@ def parse_args(args):
         dest="output_file",
     )
 
+    parser.add_argument(
+        "--preview",
+        "-n",
+        action="store_true",
+        help="Emit a preview number that is not prime."
+    )
+
     return parser.parse_args(args)
 
 
@@ -73,7 +80,7 @@ def main(args):
         output_file_path=args.output_file,
     )
 
-    a.get_prime()
+    a.get_prime(preview=args.preview)
 
 
 def run():

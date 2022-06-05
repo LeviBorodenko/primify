@@ -146,7 +146,10 @@ class PrimeImage:
 
         return ImageNumber(value=int(digits), image_width=image.width)
 
-    def get_prime(self) -> ImageNumber:
+    def get_prime(
+            self,
+            preview: False
+    ) -> ImageNumber:
 
         with console.status(f"Converting {self.image_path} into number."):
             quantized_image = PrimeImage.quantize_image(self.im)
@@ -165,23 +168,31 @@ class PrimeImage:
 
         with console.status("Searching for a similar looking prime."):
 
-            # initiate helping prime finder. Much faster than just using nextprime()
-            n_processes = max(
-                1, mp.cpu_count() - 1
-            )  # at least one core should remain free
+            # are we actually going to search?
+            if not preview:
 
-            console.log(
-                f"Initializing multi-process prime finder with {n_processes} workers."
-            )
-            prime_finder = NextPrimeFinder(
-                value=image_number.value, n_workers=n_processes
-            )
-            next_prime = prime_finder.find_next_prime()
+                # initiate helping prime finder. Much faster than just using nextprime()
+                n_processes = max(
+                    1, mp.cpu_count() - 1
+                )  # at least one core should remain free
+
+                console.log(
+                    f"Initializing multi-process prime finder with {n_processes} workers."
+                )
+                prime_finder = NextPrimeFinder(
+                    value=image_number.value, n_workers=n_processes
+                )
+                next_prime = prime_finder.find_next_prime()
+
+            else:
+                # just use the original image number as a preview if we aren't
+                # searching for a prime
+                next_prime = image_number.value
 
             # turn result back into a formated number
             result = ImageNumber(next_prime, image_number.image_width)
 
             console.print(str(result), style="black on white")
             self.output_file_path.write_text(str(result))
-            console.log(f"Saved prime to {self.output_file_path}!")
+            console.log(f"Saved {'preview' if preview else 'prime'} to {self.output_file_path}!")
             return result
